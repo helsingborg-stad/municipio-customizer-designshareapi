@@ -28,6 +28,12 @@ class ManageTheme extends Controller
                     'name' => isset($content->name) ? $content->name : null
                 ];
             }
+
+            //Alphabetical sort
+            usort($items, function ($a, $b) {
+                return strcmp($a['name'], $b['name']);
+            });
+
             return Response::json($items, 200);
         }
 
