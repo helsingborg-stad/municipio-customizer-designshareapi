@@ -23,10 +23,12 @@ class ManageTheme extends Controller
             foreach($files as $file) {
                 $content = (object) json_decode(Storage::get($file));
 
-                $items[] = [
-                    'id' => isset($content->id) ? $content->id : null,
-                    'name' => isset($content->name) ? $content->name : null
-                ];
+                if (isset($content->public) && $content->public == true) {
+                   $items[] = [
+                        'id' => isset($content->id) ? $content->id : null,
+                        'name' => isset($content->name) ? $content->name : null
+                    ];
+                }
             }
 
             //Alphabetical sort
