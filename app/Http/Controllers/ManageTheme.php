@@ -87,7 +87,7 @@ class ManageTheme extends Controller
         $fileName = $this->createInternalId($clientSecret);
 
         //Get file data
-        $input = $request->only(['website', 'name', 'dbVersion', 'mods']);
+        $input = $request->only(['website', 'name', 'dbVersion', 'mods', 'css']);
 
         //Append local data
         $input['public']    = $this->isPublic($input['website']);
