@@ -118,6 +118,10 @@ class ManageTheme extends Controller
 
         $hostname = parse_url($url, PHP_URL_HOST);
 
+        if ((bool) in_array($hostname, ['localhost', '127.0.0.1'])) {
+            return false; 
+        }
+
         if ((bool) dns_get_record($hostname, DNS_A)) {
             return true;
         }
