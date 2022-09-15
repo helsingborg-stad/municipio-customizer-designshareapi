@@ -26,7 +26,7 @@ class ManageTheme extends Controller
                 if (isset($content->public) && $content->public == true) {
                    $items[] = [
                         'id' => isset($content->id) ? $content->id : null,
-                        'name' => isset($content->name) ? $content->name : null
+                        'name' => isset($content->name) && isset($content->website) ? $content->name . " (" . parse_url($content->website, PHP_URL_HOST) . ")" : null
                     ];
                 }
             }
