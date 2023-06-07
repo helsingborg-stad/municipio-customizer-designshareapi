@@ -68,7 +68,7 @@ jobs:
     - name: The rsync deployment
       uses: burnett01/rsync-deployments@4.1
       with:
-        switches: -avzrog --delete --backup --backup-dir=${{ secrets.DEPLOY_REMOTE_BACKUP_DIR_PROD }}/$GITHUB_SHA --chown=${{ secrets.WEB_SERVER_USER_PROD }}:${{ secrets.WEB_SERVER_USER_PROD }} --exclude storage/app 
+        switches: -avzrog --delete --backup --backup-dir=${{ secrets.DEPLOY_REMOTE_BACKUP_DIR_PROD }}/$GITHUB_SHA --chown=${{ secrets.WEB_SERVER_USER_PROD }}:${{ secrets.WEB_SERVER_USER_PROD }} --exclude storage/app --exclude .env
         path: .
         remote_path: ${{ secrets.DEPLOY_REMOTE_PATH_PROD  }}
         remote_host: ${{ secrets.DEPLOY_REMOTE_HOST_PROD }}
