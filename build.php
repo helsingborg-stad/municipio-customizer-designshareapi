@@ -17,6 +17,7 @@ $removables = [
     '.gitignore',
     '.github',
     '.devcontainer',
+    '.editorconfig',
     'build.php',
     'composer.json',
     'composer.lock',
@@ -26,10 +27,9 @@ $removables = [
     'package.json',
     'patchwork.json',
     'phpunit.xml',
-    'source/tests',
     'tests',
-    'bootstrap-test.php',
-    'phpunit.xml.dist'
+    'phpunit.xml.dist',
+    'artisan'
 ];
 
 $dirName = basename(dirname(__FILE__));
