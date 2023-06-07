@@ -31,7 +31,10 @@ $removables = [
     'tests',
     'phpunit.xml.dist',
     'artisan',
-    'webpack'
+    'webpack',
+    '.env.example',
+    '.gitattributes',
+    '.styleci.yml'
 ];
 
 $dirName = basename(dirname(__FILE__));
