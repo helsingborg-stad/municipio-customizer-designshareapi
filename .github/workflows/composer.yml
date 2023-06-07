@@ -68,7 +68,7 @@ jobs:
     - name: The rsync deployment
       uses: burnett01/rsync-deployments@4.1
       with:
-        switches: -avzrog --delete --backup --backup-dir=${{ secrets.DEPLOY_REMOTE_BACKUP_DIR_PROD }}/$GITHUB_SHA --chown=${{ secrets.WEB_SERVER_USER_PROD }}:${{ secrets.WEB_SERVER_USER_PROD }} --exclude config --exclude config-example --exclude wp-content/uploads --exclude wp-content/plugins/gravityforms --exclude wp-content/plugins/wp-schema-pro --exclude track-assets --exclude wp-content/plugins/volontar-wordpress --exclude wp-content/languages --exclude .htaccess --exclude wp-content/plugins/local_* --exclude wp-content/fonts 
+        switches: -avzrog --delete --backup --backup-dir=${{ secrets.DEPLOY_REMOTE_BACKUP_DIR_PROD }}/$GITHUB_SHA --chown=${{ secrets.WEB_SERVER_USER_PROD }}:${{ secrets.WEB_SERVER_USER_PROD }} --exclude storage/app 
         path: .
         remote_path: ${{ secrets.DEPLOY_REMOTE_PATH_PROD  }}
         remote_host: ${{ secrets.DEPLOY_REMOTE_HOST_PROD }}
