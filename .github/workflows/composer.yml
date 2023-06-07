@@ -12,15 +12,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      with:
-        deploy-host: ${{ secrets.DEPLOY_REMOTE_HOST_PROD }}
-        deploy-port: ${{ secrets.DEPLOY_REMOTE_PORT_PROD }}
-        deploy-host-path: ${{ secrets.DEPLOY_REMOTE_PATH_PROD  }}
-        deploy-host-backup-path: ${{ secrets.DEPLOY_REMOTE_BACKUP_DIR_PROD }}
-        deploy-host-user: ${{ secrets.DEPLOY_REMOTE_USER_PROD }}
-        deploy-host-user-key: ${{ secrets.DEPLOY_KEY_PROD }}
-        deploy-host-web-server-user: ${{ secrets.WEB_SERVER_USER_PROD }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
     
     - uses: actions/setup-node@v3
       with:
@@ -32,7 +23,7 @@ jobs:
         php-version: 7.4
         tools: composer:v2
       env:
-        COMPOSER_TOKEN: ${{ inputs.github-token }}
+        COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Get Composer Cache Directory.
       id: composer-cache
@@ -63,7 +54,7 @@ jobs:
     - name: Inject access token in .npmrc.
       run: | 
         echo "@helsingborg-stad:registry=https://npm.pkg.github.com/helsingborg-stad" >> ~/.npmrc
-        echo "//npm.pkg.github.com/:_authToken=${{ inputs.github-token }}" >> ~/.npmrc
+        echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
       shell: bash
 
     - name: Execute buildscript
@@ -77,37 +68,37 @@ jobs:
     - name: The rsync deployment
       uses: burnett01/rsync-deployments@4.1
       with:
-        switches: -avzrog --delete --backup --backup-dir=${{ inputs.deploy-host-backup-path }}/$GITHUB_SHA --chown=${{ inputs.deploy-host-web-server-user }}:${{ inputs.deploy-host-web-server-user }} --exclude config --exclude config-example --exclude wp-content/uploads --exclude wp-content/plugins/gravityforms --exclude wp-content/plugins/wp-schema-pro --exclude track-assets --exclude wp-content/plugins/volontar-wordpress --exclude wp-content/languages --exclude .htaccess --exclude wp-content/plugins/local_* --exclude wp-content/fonts 
+        switches: -avzrog --delete --backup --backup-dir=${{ secrets.DEPLOY_REMOTE_BACKUP_DIR_PROD }}/$GITHUB_SHA --chown=${{ secrets.WEB_SERVER_USER_PROD }}:${{ secrets.WEB_SERVER_USER_PROD }} --exclude config --exclude config-example --exclude wp-content/uploads --exclude wp-content/plugins/gravityforms --exclude wp-content/plugins/wp-schema-pro --exclude track-assets --exclude wp-content/plugins/volontar-wordpress --exclude wp-content/languages --exclude .htaccess --exclude wp-content/plugins/local_* --exclude wp-content/fonts 
         path: .
-        remote_path: ${{ inputs.deploy-host-path }}
-        remote_host: ${{ inputs.deploy-host }}
-        remote_user: ${{ inputs.deploy-host-user }}
-        remote_key: ${{ inputs.deploy-host-user-key }}
-        remote_port: ${{ inputs.deploy-port }}
+        remote_path: ${{ secrets.DEPLOY_REMOTE_PATH_PROD  }}
+        remote_host: ${{ secrets.DEPLOY_REMOTE_HOST_PROD }}
+        remote_user: ${{ secrets.DEPLOY_REMOTE_USER_PROD }}
+        remote_key: ${{ secrets.DEPLOY_KEY_PROD }}
+        remote_port: ${{ secrets.DEPLOY_REMOTE_PORT_PROD }}
       
     - name: Compress backup files.
       uses: appleboy/ssh-action@v0.1.4
       with:
-        script: tar --remove-files -zcf ${{ inputs.deploy-host-backup-path }}/${{ github.sha }}.tar.gz -C ${{ inputs.deploy-host-backup-path }} ${{ github.sha }}
-        host: ${{ inputs.deploy-host }}
-        username: ${{ inputs.deploy-host-user }}
-        key: ${{ inputs.deploy-host-user-key }}
-        port: ${{ inputs.deploy-port }}
+        script: tar --remove-files -zcf ${{ secrets.DEPLOY_REMOTE_BACKUP_DIR_PROD }}/${{ github.sha }}.tar.gz -C ${{ secrets.DEPLOY_REMOTE_BACKUP_DIR_PROD }} ${{ github.sha }}
+        host: ${{ secrets.DEPLOY_REMOTE_HOST_PROD }}
+        username: ${{ secrets.DEPLOY_REMOTE_USER_PROD }}
+        key: ${{ secrets.DEPLOY_KEY_PROD }}
+        port: ${{ secrets.DEPLOY_REMOTE_PORT_PROD }}
 
     - name: Delete backups older than 7 days.
       uses: appleboy/ssh-action@v0.1.4
       with:
-        script: find ${{ inputs.deploy-host-backup-path }} -type f -mtime +7 -name '*.tar.gz' -delete
-        host: ${{ inputs.deploy-host }}
-        username: ${{ inputs.deploy-host-user }}
-        key: ${{ inputs.deploy-host-user-key }}
-        port: ${{ inputs.deploy-port }}
+        script: find ${{ secrets.DEPLOY_REMOTE_BACKUP_DIR_PROD }} -type f -mtime +7 -name '*.tar.gz' -delete
+        host: ${{ secrets.DEPLOY_REMOTE_HOST_PROD }}
+        username: ${{ secrets.DEPLOY_REMOTE_USER_PROD }}
+        key: ${{ secrets.DEPLOY_KEY_PROD }}
+        port: ${{ secrets.DEPLOY_REMOTE_PORT_PROD }}
 
     - name: Set file permissions.
       uses: appleboy/ssh-action@v0.1.4
       with:
-        script: find ${{ inputs.deploy-host-path }} -path ${{ inputs.deploy-host-path }}/wp-content/uploads -prune -o ! -type l -exec chmod g+rw {} +
-        host: ${{ inputs.deploy-host }}
-        username: ${{ inputs.deploy-host-user }}
-        key: ${{ inputs.deploy-host-user-key }}
-        port: ${{ inputs.deploy-port }}
+        script: find ${{ secrets.DEPLOY_REMOTE_PATH_PROD  }} -path ${{ secrets.DEPLOY_REMOTE_PATH_PROD  }}/wp-content/uploads -prune -o ! -type l -exec chmod g+rw {} +
+        host: ${{ secrets.DEPLOY_REMOTE_HOST_PROD }}
+        username: ${{ secrets.DEPLOY_REMOTE_USER_PROD }}
+        key: ${{ secrets.DEPLOY_KEY_PROD }}
+        port: ${{ secrets.DEPLOY_REMOTE_PORT_PROD }}
