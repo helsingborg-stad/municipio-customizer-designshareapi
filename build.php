@@ -22,6 +22,7 @@ $removables = [
     'composer.json',
     'composer.lock',
     'webpack.config.js',
+    'webpack.mix.js',
     'node_modules',
     'package-lock.json',
     'package.json',
