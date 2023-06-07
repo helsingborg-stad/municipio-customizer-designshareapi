@@ -1,0 +1,17 @@
+name: PHP CS
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: PHP CS Fixer
+        uses: StephaneBour/actions-php-cs-fixer@3
+        with:
+          # Fix php
+          dir: 'source/'
