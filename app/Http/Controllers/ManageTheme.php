@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 class ManageTheme extends Controller
 {
     private $storage = 'themes';
+    private $staleTime = "-1 Month";
 
     /**
      * Get all files stored in themes folder
@@ -22,6 +23,13 @@ class ManageTheme extends Controller
         if(is_array($files) && !empty($files)) {
             foreach($files as $file) {
                 $content = (object) json_decode(Storage::get($file));
+
+                //Do not include "stale" files 
+                if(isset($content->updated)) {
+                    if($this->isStaleTheme($content->updated, $this->staleTime)) {
+                        continue;
+                    }
+                }
 
                 if (isset($content->public) && $content->public == true) {
                    $items[] = [
@@ -50,7 +58,7 @@ class ManageTheme extends Controller
      *
      * @param string $id A varchar id
      * @return Response
-     */
+     */ 
     public function single($id) {
 
         if(!Storage::disk('local')->has($this->storage . "/" . $id . ".json")) {
@@ -60,10 +68,13 @@ class ManageTheme extends Controller
             ), 404);
         }
 
-        return Response::json(
-            json_decode(
-                Storage::get($this->storage . "/" . $id . ".json")
-        ), 200);
+        //Get file contents & Append stale status
+        $fileContents = json_decode(Storage::get($this->storage . "/" . $id . ".json")); 
+        if(is_object($fileContents)) {
+            $fileContents->isStale = $this->isStaleTheme($fileContents->updated, $this->staleTime);
+        }
+
+        return Response::json($fileContents, 200);
     }
 
     /**
@@ -152,4 +163,22 @@ class ManageTheme extends Controller
         //Create key
         return md5($key);
     }
+
+    /**
+     * Check if a file timestamp is older than a certain time period.
+     *
+     * @param string $updated A file timestamp according to the format y-m-d H:i:s
+     * @param string $timeToCheckFor A strtotime compatible string (eg. -1 month)
+     * @return bool Returns true if the file timestamp is older than the specified time period, otherwise false.
+     */
+    private function isStaleTheme(string $updated, string $timeToCheckFor): bool {
+        // Convert the updated timestamp to a UNIX timestamp
+        $updatedTimestamp = strtotime($updated);
+        
+        // Calculate the timestamp for the comparison
+        $timeToCheckTimestamp = strtotime($timeToCheckFor, time());
+        
+        // Check if the updated timestamp is older than the time to check for
+        return $updatedTimestamp < $timeToCheckTimestamp;
+    } 
 }
