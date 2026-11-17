@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('healthz', function () {
+    return response()->noContent();
+});
+
 Route::get('', "App\Http\Controllers\ManageTheme@index");
 
 Route::get('id/{id}', "App\Http\Controllers\ManageTheme@single")->where('id', '[A-Za-z0-9]+'); 
