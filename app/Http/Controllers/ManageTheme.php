@@ -18,6 +18,7 @@ class ManageTheme extends Controller
      */
     public function index() {
 
+        $items = [];
         $files = Storage::disk('local')->files($this->storage);
 
         if(is_array($files) && !empty($files)) {
@@ -39,18 +40,15 @@ class ManageTheme extends Controller
                 }
             }
 
-            //Alphabetical sort
-            usort($items, function ($a, $b) {
-                return strcmp($a['name'], $b['name']);
-            });
-
-            return Response::json($items, 200);
         }
 
-        return Response::json(array(
-            'code'      =>  500,
-            'message'   =>  "Could not find any themes."
-        ), 500);
+        // An empty shared-design collection is a valid state, especially on a
+        // fresh persistent volume. Keep the response shape stable for clients.
+        usort($items, function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
+        return Response::json($items, 200);
     }
 
     /**
